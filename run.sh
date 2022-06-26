@@ -1,21 +1,24 @@
 #!/bin/bash
+
+#clean the environment
+rm /dev/shm/buffer
+rm /dev/shm/sem.Sc
+rm /dev/shm/sem.Sp
+
+#compile with warning flags to ensure program correctness   
 gcc producer.c -Wall -Wextra -o prod.out
 gcc consumer.c -Wall -Wextra -o cons.out
 gcc setup.c -Wall -Wextra -o setup.out
 
+#run setup script to create shared memory and semaphores
 ./setup.out
 
+#run producer and consumer
 for ((i=0;i<$1;i++))
 do
-# start the producer with time delay i + 1
-sleep $i
-gnome-terminal -- sh -c "bash -c \"./prod.out $((i+1)); exec bash\""
-sleep $i
+    gnome-terminal --title="Producer $i" -- sh -c "bash -c \"./prod.out; exec bash\""
 done
-sleep 2
 for ((i=0;i<$2;i++))
 do
-sleep $i
-gnome-terminal -- sh -c "bash -c \"./cons.out $((i+1)); exec bash\""
-sleep $i
+    gnome-terminal --title="Consumer $i" -- sh -c "bash -c \"./cons.out; exec bash\""
 done

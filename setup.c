@@ -15,7 +15,7 @@ int main() {
 	int fd, i;
 	char *buffer;
 	queue *free_q, *taken_q;
-	sem_t *Sp, *Sc, *freeq, *takenq;
+
 	
 	// memory-mapping the shared buffer
 	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
@@ -41,6 +41,4 @@ int main() {
     free_q->removal = 0;
     taken_q->addition = 0;
     taken_q->removal = 0;
-	
-
 }

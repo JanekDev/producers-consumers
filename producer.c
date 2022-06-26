@@ -1,26 +1,20 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <semaphore.h>
 #include "circular_q.h"
 
-int main(int argc, char *argv[]) {
+int main() {
 	int psize = sysconf(_SC_PAGE_SIZE);
 	int fd, product, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
-	sem_t *Sp, *Sc, *freeq, *takenq;
-	srand ( time(NULL) );
-	sleep_time = rand() % 5;
+	sem_t *Sp, *Sc;
 
-	printf("sleep_time: %d\n", sleep_time);
+	//random generator had to be seeded with something more than time
+	srand ( time(NULL) % getpid() );
+	sleep_time = (rand() % 5000)*1000;
+
+	printf("sleep_time: %d ms\n", sleep_time/1000);
 
 	// memory-mapping the shared buffer
-	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
+	fd = shm_open("/buffer", O_RDWR, 0600);
 	ftruncate(fd, psize*3);
 
 	buffer = mmap(NULL, N*sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
@@ -36,8 +30,6 @@ int main(int argc, char *argv[]) {
 	// initialize binary accessible semaphores
 	Sp = sem_open("/Sp", O_CREAT, 0600, N);
 	Sc = sem_open("/Sc", O_CREAT, 0600, 0);
-	freeq = sem_open("/freeq", O_CREAT, 0600, 1);
-	takenq = sem_open("/takenq", O_CREAT, 0600, 0);
  
 	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
 
@@ -51,7 +43,7 @@ int main(int argc, char *argv[]) {
 		taken_q->queue[taken_q->addition] = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1)%N;
 		taken_q->addition = (taken_q->addition + 1) % N;
-		sleep(sleep_time); // for visual tests
+		usleep(sleep_time); // for visual tests
 		sem_post(Sc);
 	}
 	sem_close(Sp);
