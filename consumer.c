@@ -15,6 +15,8 @@ int main() {
 	char *buffer;
 	queue *free_q, *taken_q;
 	sem_t *Sp, *Sc;
+
+	// random time between 1 and 5 seconds
 	srand ( time(NULL)%getpid() );
 	sleep_time = (rand() % 5000)*1000;
 	printf("sleep_time: %d ms\n", sleep_time/1000);

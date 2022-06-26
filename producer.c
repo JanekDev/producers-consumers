@@ -7,7 +7,7 @@ int main() {
 	queue *free_q, *taken_q;
 	sem_t *Sp, *Sc;
 
-	//random generator had to be seeded with something more than time
+	//random generator had to be seeded with something more than current time
 	srand ( time(NULL) % getpid() );
 	sleep_time = (rand() % 5000)*1000;
 
