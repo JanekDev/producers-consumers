@@ -20,7 +20,7 @@ int main() {
 	printf("sleep_time: %d ms\n", sleep_time/1000);
 
 	// memory-mapping the shared buffer
-	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
+	fd = shm_open("/buffer", O_RDWR, 0600);
 	ftruncate(fd, psize*3);
 	
 	buffer = mmap(NULL, N*sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
@@ -42,7 +42,7 @@ int main() {
 	while(1) {
 		sem_wait(Sc);
 		product = buffer[taken_q->removal];
-		printf("Consumer %d consumed %d from %d\n", getpid(), product, taken_q->removal);
+		printf("Consumer %d consumed %d from index %d\n", getpid(), product, taken_q->removal);
 		free_q->queue[free_q->addition] = taken_q->queue[taken_q->removal];
 		taken_q->removal = (taken_q->removal + 1)%N;
 		free_q->addition = (free_q->addition + 1)%N;

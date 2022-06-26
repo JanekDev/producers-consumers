@@ -18,7 +18,7 @@ int main() {
 
 	
 	// memory-mapping the shared buffer
-	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
+	fd = shm_open("/buffer", O_CREAT | O_RDWR, 0600);
 	ftruncate(fd, psize*3);
 	buffer = mmap(NULL, N*sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 

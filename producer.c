@@ -39,7 +39,7 @@ int main() {
 		sem_wait(Sp);
 		product = (product + 1) % 128;
 		buffer[free_q->removal] = product;
-		printf("Producer %d produced %d and put it into %d\n", getpid(), product, free_q->removal);
+		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, free_q->removal);
 		taken_q->queue[taken_q->addition] = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1)%N;
 		taken_q->addition = (taken_q->addition + 1) % N;
