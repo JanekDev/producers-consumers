@@ -8,13 +8,17 @@
 #include <semaphore.h>
 #include "circular_q.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 	int psize = sysconf(_SC_PAGE_SIZE);
-	int fd, product;
+	int fd, product, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
-	sem_t *Sp, *Sc;
-	
+	sem_t *Sp, *Sc, *freeq, *takenq;
+	srand ( time(NULL) );
+	sleep_time = rand() % 5;
+
+	printf("sleep_time: %d\n", sleep_time);
+
 	// memory-mapping the shared buffer
 	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
 	ftruncate(fd, psize*3);
@@ -32,6 +36,8 @@ int main() {
 	// initialize binary accessible semaphores
 	Sp = sem_open("/Sp", O_CREAT, 0600, N);
 	Sc = sem_open("/Sc", O_CREAT, 0600, 0);
+	freeq = sem_open("/freeq", O_CREAT, 0600, 1);
+	takenq = sem_open("/takenq", O_CREAT, 0600, 0);
  
 	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
 
@@ -39,13 +45,13 @@ int main() {
 	
 	while(1) {
 		sem_wait(Sp);
-		buffer[free_q->removal] = product;
 		product = (product + 1) % 128;
+		buffer[free_q->removal] = product;
 		printf("Producer %d produced %d and put it into %d\n", getpid(), product, free_q->removal);
 		taken_q->queue[taken_q->addition] = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1)%N;
 		taken_q->addition = (taken_q->addition + 1) % N;
-		//sleep(1); // for visual tests
+		sleep(sleep_time); // for visual tests
 		sem_post(Sc);
 	}
 	sem_close(Sp);

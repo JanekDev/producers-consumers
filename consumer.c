@@ -8,13 +8,16 @@
 #include <semaphore.h>
 #include "circular_q.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 
 	int psize = sysconf(_SC_PAGE_SIZE);
-	int fd, product;
+	int fd, product, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
-	sem_t *Sp, *Sc;
+	sem_t *Sp, *Sc, *freeq, *takenq;
+	srand ( time(NULL) );
+	sleep_time = rand() % 5;
+	printf("sleep_time: %d\n", sleep_time);
 
 	// memory-mapping the shared buffer
 	fd = shm_open("/buffer", O_CREAT|O_RDWR, 0600);
@@ -33,6 +36,9 @@ int main() {
 
 	Sp = sem_open("/Sp", O_RDWR);
 	Sc = sem_open("/Sc", O_RDWR);
+	freeq = sem_open("/freeq", O_RDWR);
+	takenq = sem_open("/takenq", O_RDWR);
+	
 
 	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
 
@@ -43,7 +49,7 @@ int main() {
 		free_q->queue[free_q->addition] = taken_q->queue[taken_q->removal];
 		taken_q->removal = (taken_q->removal + 1)%N;
 		free_q->addition = (free_q->addition + 1)%N;
-		//sleep(2); // for visual tests
+		sleep(sleep_time); // for visual tests
 		sem_post(Sp);
 	}
 
