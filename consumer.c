@@ -43,6 +43,7 @@ int main() {
 		free_q->queue[free_q->addition] = taken_q->queue[taken_q->removal];
 		taken_q->removal = (taken_q->removal + 1)%N;
 		free_q->addition = (free_q->addition + 1)%N;
+		//sleep(2); // for visual tests
 		sem_post(Sp);
 	}
 
