@@ -33,7 +33,7 @@ int main() {
 	Sqp = sem_open("/Sqp", O_CREAT, 0600, 1);
 	
  
-	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
+	if (Sp==SEM_FAILED || Sc==SEM_FAILED || Sqp==SEM_FAILED) perror("sem_open");
 
 	product = 0;
 	
@@ -48,7 +48,11 @@ int main() {
 		free_q->removal = (free_q->removal + 1) % N;
 		taken_q->addition = (taken_q->addition + 1) % N;
 		sem_post(Sqp);
-		// FIX corrected the producing index bug		buffer[produce_place] = product; 
+		// this action doesn't need to be protected by the queue access semaphore
+		// because the mutual exclusion of indexes is ensured by the semaphore Sqp
+		// with the bound on the number of producers Sp
+		// FIX corrected the producing index bug
+		buffer[produce_place] = product; 
 		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, produce_place);
 		usleep(sleep_time); // for visual tests
 		sem_post(Sc);

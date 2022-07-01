@@ -43,6 +43,9 @@ int main() {
 		taken_q->removal = (taken_q->removal + 1) % N;
 		free_q->addition = (free_q->addition + 1) % N;
 		sem_post(Sqc);
+		// this action doesn't need to be protected by the queue access semaphore
+		// because the mutual exclusion of indexes is ensured by the semaphore Sqc
+		// with the bound on the number of consumers by Sc
 		// FIX corrected the consumption index bug
 		product = buffer[consume_place];
 		printf("Consumer %d consumed %d from index %d\n", getpid(), product, consume_place);
