@@ -6,7 +6,7 @@ int main() {
 	int fd, product, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
-	sem_t *Sp, *Sc;
+	sem_t *Sp, *Sc, *Sqc;
 
 	// random time between 1 and 5 seconds
 	srand ( time(NULL)%getpid() );
@@ -30,18 +30,23 @@ int main() {
 
 	Sp = sem_open("/Sp", O_RDWR);
 	Sc = sem_open("/Sc", O_RDWR);
+	Sqc = sem_open("/Sqc", O_CREAT, 0600, 1);
 	
 	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
 
 	while(1) {
 		sem_wait(Sc);
-		product = buffer[taken_q->removal];
-		printf("Consumer %d consumed %d from index %d\n", getpid(), product, taken_q->removal);
+		sem_wait(Sqc);
+		// FIXED the line below lacked just the reading of index from the queue not the removal number itself
+		product = buffer[taken_q->queue[taken_q->removal]];
+		// FIXED also the same problem as above but in printing the index
+		printf("Consumer %d consumed %d from index %d\n", getpid(), product, taken_q->queue[taken_q->removal]);
 		free_q->queue[free_q->addition] = taken_q->queue[taken_q->removal];
 		taken_q->removal = (taken_q->removal + 1)%N;
 		free_q->addition = (free_q->addition + 1)%N;
 		usleep(sleep_time); // for visual tests
 		sem_post(Sp);
+		sem_post(Sqc);
 	}
 
 	sem_close(Sp);

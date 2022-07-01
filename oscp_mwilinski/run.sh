@@ -1,9 +1,7 @@
 #!/bin/bash
 
 #clean the environment
-rm /dev/shm/buffer
-rm /dev/shm/sem.Sc
-rm /dev/shm/sem.Sp
+rm /dev/shm/*
 
 #compile with warning flags to ensure program correctness   
 gcc producer.c -Wall -Wextra -o prod.out
