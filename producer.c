@@ -47,6 +47,7 @@ int main() {
 		pop = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1) % N;
 		sem_post(Sqf);
+		// FIX placement and sleep
 		buffer[pop] = product; 
 		usleep(sleep_time); // for visual tests
 		sem_wait(Sqt);
