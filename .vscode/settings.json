@@ -29,5 +29,9 @@
     "**/.*/**",
     "**/.vscode",
     "**/.vscode/**"
-  ]
+  ],
+  "files.associations": {
+    "*.md": "markdown",
+    "circular_q.h": "c"
+  }
 }

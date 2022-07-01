@@ -4,8 +4,8 @@
 rm /dev/shm/buffer
 rm /dev/shm/sem.Sc
 rm /dev/shm/sem.Sp
-rm /dev/shm/sem.Sqp
-rm /dev/shm/sem.Sqc
+rm /dev/shm/sem.Sqf
+rm /dev/shm/sem.Sqt
 
 #compile with warning flags to ensure program correctness   
 gcc producer.c -Wall -Wextra -o prod.out
