@@ -47,17 +47,13 @@ int main() {
 		pop = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1) % N;
 		sem_post(Sqf);
+		buffer[pop] = product; 
+		usleep(sleep_time); // for visual tests
 		sem_wait(Sqt);
 		taken_q->queue[taken_q->addition] = pop;
 		taken_q->addition = (taken_q->addition + 1) % N;
 		sem_post(Sqt);
-		// this action doesn't need to be protected by the queue access semaphores
-		// because the mutual exclusion of indexes is ensured by the semaphore Sqp
-		// with the bound on the number of producers Sp
-		// FIX corrected the producing index bug
-		buffer[pop] = product; 
 		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, pop);
-		usleep(sleep_time); // for visual tests
 		sem_post(Sc);
 	}
 	sem_close(Sp);
