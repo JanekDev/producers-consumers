@@ -2,7 +2,7 @@
 
 int main() {
 	int psize = sysconf(_SC_PAGE_SIZE);
-	int fd, product, sleep_time;
+	int fd, product, placement, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
 	sem_t *Sp, *Sc, *Sqp;
@@ -40,19 +40,17 @@ int main() {
 	while(1) {
 		// wait for a free buffer slot
 		sem_wait(Sp);
-		// wait for a free queue slot
 		product = (product + 1) % 128;
-		// FIXED the line below lacked just the reading of index from the queue not the removal number itself
 		sem_wait(Sqp);
-		buffer[free_q->queue[free_q->removal]] = product; 
-		// FIXED also the same problem as above but in printing the index
-		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, free_q->queue[free_q->removal]);
 		taken_q->queue[taken_q->addition] = free_q->queue[free_q->removal];
+		placement = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1) % N;
 		taken_q->addition = (taken_q->addition + 1) % N;
+		sem_post(Sqp);
+		buffer[placement] = product; 
+		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, placement);
 		usleep(sleep_time); // for visual tests
 		sem_post(Sc);
-		sem_post(Sqp);
 	}
 	sem_close(Sp);
 	sem_close(Sc);
