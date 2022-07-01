@@ -2,7 +2,7 @@
 
 int main() {
 	int psize = sysconf(_SC_PAGE_SIZE);
-	int fd, product, placement, sleep_time;
+	int fd, product, produce_place, sleep_time;
 	char *buffer;
 	queue *free_q, *taken_q;
 	sem_t *Sp, *Sc, *Sqp;
@@ -41,21 +41,24 @@ int main() {
 		// wait for a free buffer slot
 		sem_wait(Sp);
 		product = (product + 1) % 128;
+		// FIX added the queue access semaphore for the producer
 		sem_wait(Sqp);
 		taken_q->queue[taken_q->addition] = free_q->queue[free_q->removal];
-		placement = free_q->queue[free_q->removal];
+		produce_place = free_q->queue[free_q->removal];
 		free_q->removal = (free_q->removal + 1) % N;
 		taken_q->addition = (taken_q->addition + 1) % N;
 		sem_post(Sqp);
-		buffer[placement] = product; 
-		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, placement);
+		// FIX corrected the producing index bug		buffer[produce_place] = product; 
+		printf("Producer %d produced %d and put it into index %d\n", getpid(), product, produce_place);
 		usleep(sleep_time); // for visual tests
 		sem_post(Sc);
 	}
 	sem_close(Sp);
 	sem_close(Sc);
+	sem_close(Sqp);
 	sem_unlink("/Sp");
 	sem_unlink("/Sc");
+	sem_unlink("/Sqp");
 	munmap(buffer, N*sizeof(int));
 	munmap(taken_q, sizeof(queue));
 	munmap(free_q, sizeof(queue));

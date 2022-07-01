@@ -32,16 +32,18 @@ int main() {
 	Sc = sem_open("/Sc", O_RDWR);
 	Sqc = sem_open("/Sqc", O_CREAT, 0600, 1);
 	
-	if (Sp==SEM_FAILED || Sc==SEM_FAILED) perror("sem_open");
+	if (Sp==SEM_FAILED || Sc==SEM_FAILED || Sqc==SEM_FAILED) perror("sem_open");
 
 	while(1) {
 		sem_wait(Sc);
+		// FIX added the queue access semaphore for the consumer
 		sem_wait(Sqc);
 		free_q->queue[free_q->addition] = taken_q->queue[taken_q->removal];
 		consume_place = taken_q->queue[taken_q->removal];
-		taken_q->removal = (taken_q->removal + 1)%N;
-		free_q->addition = (free_q->addition + 1)%N;
+		taken_q->removal = (taken_q->removal + 1) % N;
+		free_q->addition = (free_q->addition + 1) % N;
 		sem_post(Sqc);
+		// FIX corrected the consumption index bug
 		product = buffer[consume_place];
 		printf("Consumer %d consumed %d from index %d\n", getpid(), product, consume_place);
 		usleep(sleep_time); // for visual tests
@@ -50,8 +52,10 @@ int main() {
 
 	sem_close(Sp);
 	sem_close(Sc);
+	sem_close(Sqc);
 	sem_unlink("/Sp");
 	sem_unlink("/Sc");
+	sem_unlink("/Sqc");
 	munmap(buffer, N*sizeof(int));
 	munmap(free_q, sizeof(queue));
 	munmap(taken_q, sizeof(queue));
