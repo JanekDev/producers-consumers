@@ -46,7 +46,7 @@ int main() {
 		free_q->queue[free_q->addition] = pop;
 		free_q->addition = (free_q->addition + 1) % N;
 		sem_post(Sqf);
-		// this action doesn't need to be protected by the queue access semaphore
+		// this action doesn't need to be protected by the queue access semaphores
 		// because the mutual exclusion of indexes is ensured by the semaphore Sqc
 		// with the bound on the number of consumers by Sc
 		// FIX corrected the consumption index bug

@@ -51,7 +51,7 @@ int main() {
 		taken_q->queue[taken_q->addition] = pop;
 		taken_q->addition = (taken_q->addition + 1) % N;
 		sem_post(Sqt);
-		// this action doesn't need to be protected by the queue access semaphore
+		// this action doesn't need to be protected by the queue access semaphores
 		// because the mutual exclusion of indexes is ensured by the semaphore Sqp
 		// with the bound on the number of producers Sp
 		// FIX corrected the producing index bug
