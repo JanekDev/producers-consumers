@@ -27,11 +27,11 @@ int main() {
 		exit(1);
 	}
 
-	// initialize binary accessible semaphores
-	Sp = sem_open("/Sp", O_CREAT, 0600, N);
-	Sc = sem_open("/Sc", O_CREAT, 0600, 0);
-	Sqf = sem_open("/Sqf", O_CREAT, 0600, 1);
-	Sqt = sem_open("/Sqt", O_CREAT, 0600, 1);
+	// open semaphores
+	Sp = sem_open("/Sp", O_RDWR);
+	Sc = sem_open("/Sc", O_RDWR);
+	Sqf = sem_open("/Sqf", O_RDWR);
+	Sqt = sem_open("/Sqt", O_RDWR); 
 	
  
 	if (Sp==SEM_FAILED || Sc==SEM_FAILED || Sqt==SEM_FAILED || Sqf==SEM_FAILED) perror("sem_open");
