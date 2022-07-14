@@ -12,7 +12,9 @@ Consumer:
 - waits for a producer to produce a number
 
 Our goal is to implement a producer-consumer problem that supports multiple producers and consumers concurrently as shown in the following figure.
+<p align="center">
+    <img src="img/diag.png"/>
+<p>
 
-![](img/diag.png)
 ## Implementation
 In the multi-producer-multi-consumer case, we use two queues, one for free positions and one for occupied positions. By using mutexes for each queue and a counting semaphore for the number of producers and consumers, we easily ensure mutual exclusion and synchronization, while making the cycle of producing and consuming numbers as short as possible.
