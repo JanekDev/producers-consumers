@@ -8,9 +8,9 @@ rm /dev/shm/sem.Sqf
 rm /dev/shm/sem.Sqt
 
 #compile with warning flags to ensure program correctness   
-gcc producer.c -Wall -Wextra -o prod.out
-gcc consumer.c -Wall -Wextra -o cons.out
-gcc setup.c -Wall -Wextra -o setup.out
+gcc src/producer.c -Wall -Wextra -o prod.out
+gcc src/consumer.c -Wall -Wextra -o cons.out
+gcc src/setup.c -Wall -Wextra -o setup.out
 
 #run setup script to create shared memory and semaphores
 ./setup.out
